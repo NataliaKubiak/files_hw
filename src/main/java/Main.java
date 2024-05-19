@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Main {
@@ -57,6 +58,9 @@ public class Main {
         deleteFile("savegames/save1.dat");
         deleteFile("savegames/save2.dat");
         deleteFile("savegames/save3.dat");
+
+        //Задача 3
+        openZip("savegames/zip.zip", "savegames");
     }
 
     public static void mkDir(String dirName) {
@@ -117,6 +121,25 @@ public class Main {
             }
             zout.close();
         } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private static void openZip(String zipPath, String outputDirPath) {
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(rootDirPath + zipPath))) {
+            ZipEntry entry;
+            String name;
+            while ((entry = zin.getNextEntry()) != null) {
+                name = entry.getName();
+                FileOutputStream fout = new FileOutputStream(rootDirPath + outputDirPath + "/UNPACKED_" + name);
+                for (int c = zin.read(); c != -1; c= zin.read()) {
+                    fout.write(c);
+                }
+                fout.flush();
+                zin.closeEntry();
+                fout.close();
+            }
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
